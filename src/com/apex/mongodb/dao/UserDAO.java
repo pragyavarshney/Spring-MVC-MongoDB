@@ -1,5 +1,6 @@
 package com.apex.mongodb.dao;
 
+import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,6 +19,7 @@ import com.mongodb.MongoClient;
 public class UserDAO {
 
 	static String db_name = "mydb", db_collection = "user";
+	 private static Logger log = Logger.getLogger(UserDAO.class);
 
 	MongoClient mongoClient = new MongoClient("localhost", 27017);
 	DB database = mongoClient.getDB(db_name);
@@ -39,8 +41,8 @@ public class UserDAO {
 
 			// Save a new user to the mongo collection.
 			collection.insert(document);
-		} catch (Exception ex) {
-			System.out.println("An error occurred while saving a new user to the mongo database" + ex);
+		} catch (Exception e) {
+			log.error("An error occurred while saving a new user to the mongo database", e);   
 		}
 
 	}
@@ -51,7 +53,7 @@ public class UserDAO {
 		// Fetching the record object from the mongo database.
 		DBObject where_query = new BasicDBObject();
 		where_query.put("firstname", firstname);
-		
+
 		DBObject dbo = collection.findOne(where_query);
 		user.setId(dbo.get("id").toString());
 		user.setFirstName(dbo.get("firstname").toString());
@@ -64,13 +66,13 @@ public class UserDAO {
 
 	// Fetching a single user details from the mongo database.(using id)
 	public User findUserId(String id) {
-		
+
 		User user = new User();
 
 		// Fetching the record object from the mongo database.
 		DBObject where_query = new BasicDBObject();
 		where_query.put("id", id);
-		
+
 		DBObject dbo = collection.findOne(where_query);
 		user.setId(dbo.get("id").toString());
 		user.setFirstName(dbo.get("firstname").toString());
@@ -109,7 +111,7 @@ public class UserDAO {
 			collection.update(existing, newDocument);
 
 		} catch (Exception e) {
-			System.out.println("An error has occurred while updating an existing user to the mongo database" + e);
+			 log.error("An error has occurred while updating an existing user to the mongo database", e);
 
 		}
 
@@ -125,7 +127,7 @@ public class UserDAO {
 			// Deleting the selected user from the mongo database.
 			collection.remove(searchQuery);
 		} catch (Exception e) {
-			System.out.println("An error occurred while deleting an existing user from the mongo database");
+			log.error("An error occurred while deleting an existing user from the mongo database", e);   
 			e.printStackTrace();
 		}
 
@@ -148,7 +150,8 @@ public class UserDAO {
 			user_list.add(user);
 
 		}
-		System.out.println("Total records fetched from the mongo database are=" + user_list.size());
+		log.debug("Total records fetched from the mongo database are= " + user_list.size());
+//		System.out.println("Total records fetched from the mongo database are=" + user_list.size());
 		return user_list;
 
 	}
